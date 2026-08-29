@@ -1,1 +1,207 @@
 
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SalesBot AI</title>
+
+<style>
+body{
+  margin:0;
+  font-family:Arial,sans-serif;
+  background:#f5f7fb;
+  color:#172033;
+}
+
+header{
+  padding:18px 7%;
+  background:#172033;
+  color:white;
+  font-weight:bold;
+  font-size:20px;
+}
+
+main{
+  max-width:900px;
+  margin:35px auto;
+  padding:0 16px;
+}
+
+.hero{
+  text-align:center;
+  margin-bottom:25px;
+}
+
+.hero h1{
+  font-size:34px;
+}
+
+.card{
+  background:white;
+  border-radius:16px;
+  padding:20px;
+}
+
+#chat{
+  height:430px;
+  overflow:auto;
+  padding:10px;
+}
+
+.msg{
+  padding:12px 15px;
+  border-radius:14px;
+  margin:10px 0;
+  max-width:75%;
+}
+
+.user{
+  margin-left:auto;
+  background:#172033;
+  color:white;
+}
+
+.bot{
+  background:#eef1f6;
+}
+
+form{
+  display:flex;
+  gap:10px;
+  border-top:1px solid #eee;
+  padding-top:15px;
+}
+
+input{
+  flex:1;
+  padding:14px;
+  border:1px solid #ddd;
+  border-radius:10px;
+  font-size:16px;
+}
+
+button{
+  padding:14px 20px;
+  border:0;
+  border-radius:10px;
+  background:#172033;
+  color:white;
+}
+
+.products{
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+  margin-top:20px;
+}
+
+.product{
+  background:white;
+  padding:14px;
+  border-radius:12px;
+  min-width:150px;
+}
+</style>
+</head>
+
+<body>
+
+<header>⚡ SalesBot AI — 24/7 E-commerce Agent</header>
+
+<main>
+
+<div class="hero">
+<h1>Your AI Sales Agent</h1>
+<p>Ask for products, prices and recommendations.</p>
+</div>
+
+<div class="card">
+
+<div id="chat">
+<div class="msg bot">
+Hi! 👋 I'm SalesBot AI. What are you looking for today?
+</div>
+</div>
+
+<form id="form">
+<input id="message"
+placeholder="Example: I need snacks under ₹150"
+autocomplete="off">
+
+<button type="submit">Send</button>
+</form>
+
+</div>
+
+<h2>Product Catalog</h2>
+
+<div id="products" class="products"></div>
+
+</main>
+
+<script>
+
+const chat=document.getElementById("chat");
+const form=document.getElementById("form");
+const input=document.getElementById("message");
+
+function add(text,type){
+  const d=document.createElement("div");
+  d.className="msg "+type;
+  d.textContent=text;
+  chat.appendChild(d);
+  chat.scrollTop=chat.scrollHeight;
+}
+
+fetch("/api/products")
+.then(r=>r.json())
+.then(items=>{
+  document.getElementById("products").innerHTML=
+  items.map(p=>`
+  <div class="product">
+  <b>${p.name}</b><br>
+  ₹${p.price}<br>
+  <small>${p.stock?"In stock":"Out of stock"}</small>
+  </div>
+  `).join("");
+});
+
+form.addEventListener("submit",async e=>{
+
+  e.preventDefault();
+
+  const message=input.value.trim();
+
+  if(!message)return;
+
+  add(message,"user");
+
+  input.value="";
+
+  try{
+
+    const r=await fetch("/api/chat",{
+      method:"POST",
+      headers:{
+        "Content-Type":"application/json"
+      },
+      body:JSON.stringify({message})
+    });
+
+    const data=await r.json();
+
+    add(data.reply,"bot");
+
+  }catch{
+
+    add("Connection problem. Please try again.","bot");
+
+  }
+
+});
+
+</script>
+
+</body>
+  </html>
