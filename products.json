@@ -1,0 +1,7 @@
+[
+  {"id":1,"name":"Potato Chips","price":40,"category":"Snacks","stock":true},
+  {"id":2,"name":"Chocolate Cookies","price":80,"category":"Snacks","stock":true},
+  {"id":3,"name":"Orange Juice","price":120,"category":"Drinks","stock":true},
+  {"id":4,"name":"Protein Bar","price":150,"category":"Healthy","stock":true},
+  {"id":5,"name":"Mixed Nuts","price":250,"category":"Healthy","stock":false}
+]
